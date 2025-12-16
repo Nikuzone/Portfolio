@@ -1,0 +1,32 @@
+name: Deploy Blazor WASM to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main   # Deploy only when main branch is updated
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the repo
+      - uses: actions/checkout@v3
+
+      # 2. Setup .NET 10
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '10.0.x'
+
+      # 3. Restore, Build, Publish
+      - name: Restore, Build and Publish
+        run: |
+          dotnet restore
+          dotnet publish -c Release -o ./publish
+
+      # 4. Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./publish/browser-wasm/publish
